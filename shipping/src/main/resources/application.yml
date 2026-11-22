@@ -1,0 +1,46 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: shipping
+
+  kafka:
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:kafka:9092}
+
+    consumer:
+      group-id: shipping-group
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "org.neoflex.shipping.model"
+        spring.json.value.default.type: org.neoflex.shipping.model.OrderPayedEvent
+        spring.json.use.type.headers: false
+
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      acks: all
+      properties:
+        enable.idempotence: true
+        spring.json.add.type.headers: false
+
+    listener:
+      ack-mode: manual_immediate
+      concurrency: ${CONSUMER_CONCURRENCY:4}
+
+    admin:
+      auto-create: true
+      fail-fast: true
+
+KAFKA_PARTITION_COUNT: ${KAFKA_PARTITION_COUNT:4}
+
+logging:
+  level:
+    org.springframework.kafka: INFO
+    org.apache.kafka: WARN
+    org.neoflex.shipping: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
