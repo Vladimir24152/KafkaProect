@@ -1,0 +1,14 @@
+package org.neoflex.payment.model;
+
+import java.math.BigDecimal;
+import java.time.Instant;
+
+public record OrderCreatedEvent(
+        String eventType,
+        String orderId,
+        String customerId,
+        String productId,
+        Integer quantity,
+        BigDecimal amount,
+        Instant timestamp
+) {}

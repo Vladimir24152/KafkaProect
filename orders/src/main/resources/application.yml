@@ -1,0 +1,34 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: orders
+
+  kafka:
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:kafka:9092}
+
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      acks: all
+      properties:
+        enable.idempotence: true
+        spring.json.add.type.headers: false
+        compression.type: lz4
+        linger.ms: 5
+        batch.size: 16384
+
+    admin:
+      auto-create: true
+      fail-fast: true
+
+KAFKA_PARTITION_COUNT: ${KAFKA_PARTITION_COUNT:4}
+
+logging:
+  level:
+    org.springframework.kafka: INFO
+    org.apache.kafka: WARN
+    org.neoflex.orders: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
